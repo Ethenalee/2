@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+echo "Begin database seeding..."
+
+RDB_NAME=$DB_NAME
+
+SEED_PATH=/srv/root/database/seeds
+SEEDS_SOURCE=file://$SEED_PATH
+SEEDS_TABLE=schema_seeds
+
+if [[ -v UNIT_TEST ]]; then
+    RDB_NAME="${DB_NAME}_test"
+fi
+
+DB_URI="postgres://${WRITE_DB_USER}:${WRITE_DB_PASS}@${WRITE_DB_HOST}:${WRITE_DB_PORT}/${RDB_NAME}?x-migrations-table=${SEEDS_TABLE}&sslmode=require"
+
+
+if [[ $# -gt 0 ]]; then
+    case "$1" in
+        up)
+            echo "Running DB Seeds $1..."
+            go-migrate -path $SEED_PATH -database $DB_URI $@
+            echo "Seeds $1 complete"
+        ;;
+
+        down)
+            # Passing in yes, because down prompts for confirm.
+            echo "Running DB Seeds $1..."
+            # this is a little sloppy like this.. but will do for now
+            yes | go-migrate -source $SEEDS_SOURCE -database $DB_URI $@
+            echo "Seeds $1 complete"
+        ;;
+
+        create)
+            # clean the input a little bit
+            dirty_name=$2
+            lower_name=${dirty_name,,}
+            seed_name=${lower_name// /_}
+
+            echo "Running create DB seed..."
+            go-migrate create -ext sql -dir $SEED_PATH -seq $seed_name
+            echo "Create seed complete"
+        ;;
+
+    esac
+fi
+
+exit 0
