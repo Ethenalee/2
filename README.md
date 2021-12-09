@@ -14,6 +14,10 @@ To manually create the DB:
 - Run psql inside of docker container `docker exec -it nfl-rushing-backend_postgres_1 psql -U postgres`
 - Create DB: `CREATE DATABASE rushing_dev;`
 
+Json file ready
+- Any new json file added in data/seeds folder run `jq -c '.[]' <file>.json > <new-file>.json`
+Make sure to replace with `<new-file>.json` so its ready for seed sql
+
 
 1. Run frontend
 - Go to nfl-rushing-frontend `cd nfl-rushing-frontend`
