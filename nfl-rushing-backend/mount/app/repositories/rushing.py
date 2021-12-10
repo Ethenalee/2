@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from typing import List
-from uuid import UUID
+from enum import Enum
+from typing import List, Optional
 
 from app.commons.database import DBSession
 
@@ -12,7 +12,6 @@ from app.commons.database import DBSession
 @dataclass(frozen=True)
 class Rushing:
     rec_id: int
-    rushing_id: UUID
     name: str
     team_abbreviation: str
     position: str
@@ -32,10 +31,9 @@ class Rushing:
     created_at: datetime
 
     @staticmethod
-    def from_rec(rec) -> Rushing:
+    def from_record(rec) -> Rushing:
         return Rushing(
             rec_id=rec.get("rec_id"),
-            rushing_id=rec.get("rushing_id"),
             name=rec.get("name"),
             team_abbreviation=rec.get("team_abbreviation"),
             position=rec.get("position"),
@@ -56,15 +54,96 @@ class Rushing:
         )
 
 
+@dataclass
+class PageFilter:
+    limit: int
+    offset: int
+
+    @property
+    def page_query(self):
+        return f" LIMIT {self.limit} OFFSET {self.offset}"
+
+
+class SortField(str, Enum):
+    total_rushing_yards = "total_rushing_yards"
+    lng_rush = "lng_rush"
+    total_rushing_touch_down = "total_rushing_touch_down"
+    name = "name"
+
+
+class SortDirection(str, Enum):
+    ASC = "asc"
+    DESC = "desc"
+
+
+@dataclass
+class SortFilter:
+    field: SortField
+    direction: Optional[SortDirection] = SortDirection.ASC
+
+    @property
+    def field_and_direction(self):
+        return f"{self.field.name} {self.direction.name}"
+
+    @staticmethod
+    def create_from_params(sort_pair: str) -> "SortFilter":
+        pair = sort_pair.split(",")
+        field = SortField(pair[0])
+        direction = SortDirection(pair[1]) if len(pair) == 2 \
+            else SortDirection.ASC
+
+        return SortFilter(field, direction)
+
+
+@dataclass
+class RushingFilters:
+    name: Optional[str] = None
+    page: Optional[PageFilter] = None
+    sort: Optional[List[SortFilter]] = None
+
+    @property
+    def conditions_query(self):
+        list_of_conditions = []
+        if self.name is not None:
+            list_of_conditions.append(
+                "name = :name"
+            )
+
+        return " AND ".join(list_of_conditions)
+
+    @property
+    def sort_query(self):
+        if self.sort:
+            list_of_sort_filters = [s.field_and_direction for s in self.sort]
+            return ", ".join(list_of_sort_filters)
+        else:
+            return "rec_id desc"
+
+
 class RushingRepo:
     def __init__(self, db: DBSession):
         self._queries = _QueryBuilder()
         self._db = db
 
-    async def get_all(self, offset: int, limit: int) -> List[Rushing]:
-        sql = self._queries.get_all()
-        rec = await self._db.exec_read(sql, {"limit": limit, "offset": offset})
-        return [Rushing.from_record(tx) for tx in rec]
+    async def get_with_filters(
+        self, filters: RushingFilters
+    ) -> List[Rushing]:
+        sql = self._queries.get_with_filters(filters)
+        values = {}
+        if filters.name:
+            values["name"] = filters.name
+
+        recs = await self._db.exec_read(sql, values)
+        return [Rushing.from_record(rec) for rec in recs]
+
+    async def count_with_filters(self, filters: RushingFilters) -> int:
+        sql = self._queries.count_with_filters(filters)
+        values = {}
+        if filters.name:
+            values["name"] = filters.name
+        rec = await self._db.exec_read_one(sql, values)
+        count = rec.get("count")
+        return count
 
 
 class _QueryBuilder:
@@ -72,7 +151,6 @@ class _QueryBuilder:
 
     READ_PARAMS = """
                 rec_id,
-                rushing_id,
                 name,
                 team_abbreviation,
                 position,
@@ -96,10 +174,28 @@ class _QueryBuilder:
             SELECT {READ_PARAMS} FROM {TABLE}
         """
 
-    def get_all(self) -> str:
-        return f"""
-                {self.BASE_READ}
-                ORDER BY
-                    rec_id DESC
-                LIMIT :limit OFFSET :offset
+    def get_with_filters(self, filters: RushingFilters) -> str:
+
+        query = f"""{self.BASE_READ} WHERE rec_id IN
+                    (SELECT max(rec_id)
+                    FROM rushings GROUP BY rec_id)
         """
+
+        if filters.conditions_query:
+            query += f"AND {filters.conditions_query} "
+
+        query += f"ORDER BY {filters.sort_query}"
+
+        if filters.page:
+            query += f"{filters.page.page_query}"
+
+        return query
+
+    def count_with_filters(cls, filters: RushingFilters) -> str:
+        query = """ SELECT COUNT(*) FROM rushings
+                    WHERE rec_id IN (SELECT max(rec_id)
+                    FROM rushings GROUP BY rec_id)
+        """
+        if filters.conditions_query:
+            query += f"AND {filters.conditions_query} "
+        return query

@@ -25,18 +25,18 @@ BEGIN;
         "Player" TEXT,
         "Team" TEXT,
         "Pos" TEXT,
-        "Att" TEXT,
-        "Att/G" TEXT,
+        "Att" INT,
+        "Att/G" DECIMAL,
         "Yds" TEXT,
-        "Avg" TEXT,
-        "Yds/G" TEXT,
-        "TD" TEXT,
+        "Avg" DECIMAL,
+        "Yds/G" DECIMAL,
+        "TD" INT,
         "Lng" TEXT,
-        "1st" TEXT,
-        "1st%" TEXT,
-        "20+" TEXT,
-        "40+" TEXT,
-        "FUM" TEXT
+        "1st" INT,
+        "1st%" DECIMAL,
+        "20+" DECIMAL,
+        "40+" DECIMAL,
+        "FUM" DECIMAL
     );
 
 	DROP TABLE rushing_json;
