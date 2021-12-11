@@ -38,6 +38,42 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "/v1/rushings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/v1/rushings",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"v1",
+						"rushings"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{name}}"
+						},
+						{
+							"key": "page",
+							"value": "{{page}}"
+						},
+						{
+							"key": "per_page",
+							"value": "{{per_page}}"
+						},
+						{
+							"key": "sort",
+							"value": "{{sort}}"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
