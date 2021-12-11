@@ -28,7 +28,7 @@ cd /srv/root
 # Start services
 case $APP_COMPONENT in
   "tests")
-    /scripts/run_tests.sh
+    /scripts/run-tests.sh
     ;;
 
   "server" | *)

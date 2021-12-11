@@ -5,9 +5,11 @@ from fastapi import APIRouter, Security, Query
 from pydantic import BaseModel
 
 from app.commons import logger
+from app.commons.exceptions import AppErrorCode, AppErrorMessage
 from app.interfaces.http.lib.auth import no_auth
 from app.interfaces.http.lib.context import RequestContext
-from app.interfaces.http.lib.responses import ErrorResponse, SuccessResponse
+from app.interfaces.http.lib.responses import ErrorResponse, SuccessResponse, \
+    ValidationErrorResponse, FieldError
 from app.usecases.rushing import RushingUsecases, GetRushingResponse
 
 router = APIRouter()
@@ -30,8 +32,21 @@ async def get_all(
     ctx: RequestContext = Security(no_auth),
 ) -> Union[SuccessResponse, ErrorResponse]:
     logger.debug("received get rushing request")
-    data, count = await RushingUsecases(ctx.db) \
-        .get_all(name=name, sort=sort, page=page, per_page=per_page)
+    try:
+        data, count = await RushingUsecases(ctx.db) \
+            .get_all(name=name, sort=sort, page=page, per_page=per_page)
+
+    except ValueError as exc:
+        logger.error(f"Invalid params: {exc}")
+        return ValidationErrorResponse(
+            [
+                FieldError(
+                    code=AppErrorCode.INVALID_PARAMS.value,
+                    field="query",
+                    message=AppErrorMessage.INVALID_PARAMS.value,
+                ),
+            ]
+        )
 
     meta = PaginationMeta(
         page=page if page and per_page else 1,
