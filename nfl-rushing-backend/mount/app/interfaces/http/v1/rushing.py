@@ -22,7 +22,7 @@ class PaginationMeta(BaseModel):
     total_pages: Optional[int]
 
 
-@router.get("/rushings", status_code=200,
+@router.get("/rushingrecords", status_code=200,
             response_model=List[GetRushingResponse])
 async def get_all(
     name: Optional[str] = Query(None),

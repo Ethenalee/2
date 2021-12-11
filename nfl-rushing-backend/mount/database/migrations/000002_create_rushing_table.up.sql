@@ -1,6 +1,6 @@
 BEGIN;
 
-    CREATE TABLE IF NOT EXISTS rushings (
+    CREATE TABLE IF NOT EXISTS rushingrecords (
         rec_id BIGSERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         team_abbreviation TEXT NOT NULL,
@@ -21,6 +21,6 @@ BEGIN;
         updated_At TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT current_timestamp
     );
 
-    CREATE INDEX IF NOT EXISTS idx_rushings_player_name ON rushings(name);
+    CREATE INDEX IF NOT EXISTS idx_rushingrecords_player_name ON rushingrecords(name);
 
 COMMIT;

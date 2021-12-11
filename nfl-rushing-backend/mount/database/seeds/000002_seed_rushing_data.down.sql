@@ -1,5 +1,5 @@
 BEGIN;
 
-    TRUNCATE rushings;
+    TRUNCATE rushingrecords;
 
 COMMIT;

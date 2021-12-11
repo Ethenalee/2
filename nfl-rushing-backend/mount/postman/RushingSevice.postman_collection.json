@@ -40,18 +40,18 @@
 			"response": []
 		},
 		{
-			"name": "/v1/rushings",
+			"name": "/v1/rushingrecords",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{API_URL}}/v1/rushings",
+					"raw": "{{API_URL}}/v1/rushingrecords",
 					"host": [
 						"{{API_URL}}"
 					],
 					"path": [
 						"v1",
-						"rushings"
+						"rushingrecords"
 					],
 					"query": [
 						{

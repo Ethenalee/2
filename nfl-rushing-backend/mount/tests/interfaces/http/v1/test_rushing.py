@@ -3,7 +3,7 @@ from tests.conftest import NUMBER_OF_SEED_DATA, PLAYER_NAME, SORT_TD_ASC, \
 
 
 def test_get_all_returns_200(app_client):
-    resp = app_client.get("/v1/rushings")
+    resp = app_client.get("/v1/rushingrecords")
     meta = resp.json()["meta"]
     assert resp.status_code == 200
     assert meta["total_pages"] == 1
@@ -12,7 +12,7 @@ def test_get_all_returns_200(app_client):
 
 def test_get_all_return_with_name_filter_200(app_client):
     params = {"name": PLAYER_NAME}
-    resp = app_client.get("/v1/rushings", params=params)
+    resp = app_client.get("/v1/rushingrecords", params=params)
     data = resp.json()["data"]
     meta = resp.json()["meta"]
     assert resp.status_code == 200
@@ -23,7 +23,7 @@ def test_get_all_return_with_name_filter_200(app_client):
 
 def test_get_all_return_with_wrong_name_filter_200(app_client):
     params = {"name": "random"}
-    resp = app_client.get("/v1/rushings", params=params)
+    resp = app_client.get("/v1/rushingrecords", params=params)
     data = resp.json()["data"]
     meta = resp.json()["meta"]
     assert resp.status_code == 200
@@ -34,7 +34,7 @@ def test_get_all_return_with_wrong_name_filter_200(app_client):
 
 def test_get_all_return_with_sort_filter_200(app_client):
     params = {"sort": SORT_TD_ASC}
-    resp = app_client.get("/v1/rushings", params=params)
+    resp = app_client.get("/v1/rushingrecords", params=params)
     data = resp.json()["data"]
     meta = resp.json()["meta"]
     assert resp.status_code == 200
@@ -45,11 +45,11 @@ def test_get_all_return_with_sort_filter_200(app_client):
 
 def test_get_all_return_with_wrong_sort_filter_422(app_client):
     params = {"sort": "mistake"}
-    resp = app_client.get("/v1/rushings", params=params)
+    resp = app_client.get("/v1/rushingrecords", params=params)
     assert resp.status_code == 422
 
 
 def test_get_all_return_with_wrong_paginate_filter_422(app_client):
     params = {"page": "d", "per_page": "1"}
-    resp = app_client.get("/v1/rushings", params=params)
+    resp = app_client.get("/v1/rushingrecords", params=params)
     assert resp.status_code == 422

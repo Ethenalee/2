@@ -2,7 +2,7 @@ BEGIN;
     CREATE unlogged TABLE rushing_json (doc json);
 	COPY rushing_json FROM '/srv/root/data/seeds/rushing.json';
 
-    INSERT INTO rushings (
+    INSERT INTO rushingrecords (
         name,
         team_abbreviation,
         position,

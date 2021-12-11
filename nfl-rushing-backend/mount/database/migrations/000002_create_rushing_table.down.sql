@@ -1,5 +1,5 @@
 BEGIN;
 
-    DROP TABLE IF EXISTS rushings;
+    DROP TABLE IF EXISTS rushingrecords;
 
 COMMIT;
