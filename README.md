@@ -21,9 +21,11 @@ Make sure to replace with `<new-file>.json` so its ready for seed sql
 
 Set up
 1. Run frontend
+- Create a `.env` file and copy the contents from `.env.example` over:
+    1. In the service directory:
+        `cp .env.example .env`
 - Go to nfl-rushing-frontend `cd nfl-rushing-frontend`
-- Build containers `docker-compose build`
-- Run postgres `docker-compose up`
+- Run app `npm start`
 
 2. Run backend
 - Create a `.env` file and copy the contents from `.env.example` over:
