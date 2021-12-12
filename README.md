@@ -26,6 +26,7 @@ Set up
         `cp .env.example .env`
 - Go to nfl-rushing-frontend `cd nfl-rushing-frontend`
 - Run app `npm start`
+- Run test `npm test`
 
 2. Run backend
 - Create a `.env` file and copy the contents from `.env.example` over:
