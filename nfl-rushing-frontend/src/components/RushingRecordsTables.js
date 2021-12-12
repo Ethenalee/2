@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import fetchData from '../api/fetch_data';
+import fetchData from '../api/fetchData';
 
 import {
 	DataGrid,
@@ -39,9 +39,10 @@ const RushingRecordsTables = () => {
 	};
 
 	return (
-		<div style={{ height: 1000, width: '100%' }}>
+		<div data-testid="rushingrecords-tables" style={{ height: 1000, width: '100%' }}>
 			{playerRushingData && customToolbar ? (
 				<DataGrid
+					data-testid="rushingrecords-data-grid"
 					rows={playerRushingData}
 					columns={createColumnNames()}
 					components={{

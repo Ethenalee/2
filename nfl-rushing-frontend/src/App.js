@@ -1,4 +1,4 @@
-import RushingRecordsTables from './components/rushingrecords_tables';
+import RushingRecordsTables from './components/RushingRecordsTables';
 
 function App() {
 	return (
