@@ -147,7 +147,7 @@ class RushingRepo:
 
 
 class _QueryBuilder:
-    TABLE = "rushings"
+    TABLE = "rushingrecords"
 
     READ_PARAMS = """
                 rec_id,
@@ -178,7 +178,7 @@ class _QueryBuilder:
 
         query = f"""{self.BASE_READ} WHERE rec_id IN
                     (SELECT max(rec_id)
-                    FROM rushings GROUP BY rec_id)
+                    FROM rushingrecords GROUP BY rec_id)
         """
 
         if filters.conditions_query:
@@ -192,9 +192,9 @@ class _QueryBuilder:
         return query
 
     def count_with_filters(cls, filters: RushingFilters) -> str:
-        query = """ SELECT COUNT(*) FROM rushings
+        query = """ SELECT COUNT(*) FROM rushingrecords
                     WHERE rec_id IN (SELECT max(rec_id)
-                    FROM rushings GROUP BY rec_id)
+                    FROM rushingrecords GROUP BY rec_id)
         """
         if filters.conditions_query:
             query += f"AND {filters.conditions_query} "

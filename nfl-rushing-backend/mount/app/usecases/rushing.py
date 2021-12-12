@@ -9,6 +9,7 @@ from app.repositories.rushing import \
 
 
 class GetRushingResponse(BaseModel):
+    id: int
     name: str
     team_abbreviation: str
     position: str
@@ -50,10 +51,11 @@ class RushingUsecases:
             if page and per_page else None,
             sort=sort if sort else None
         )
-        rushings = await repo.get_with_filters(filters=filters)
+        rushingrecords = await repo.get_with_filters(filters=filters)
         count = await repo.count_with_filters(filters=filters)
         return [
             GetRushingResponse(
+                id=rushing.rec_id,
                 name=rushing.name,
                 team_abbreviation=rushing.team_abbreviation,
                 position=rushing.position,
@@ -72,5 +74,5 @@ class RushingUsecases:
                 fum=rushing.fum,
                 updated_at=rushing.updated_at,
                 created_at=rushing.created_at,
-            ) for rushing in rushings
+            ) for rushing in rushingrecords
         ], count
