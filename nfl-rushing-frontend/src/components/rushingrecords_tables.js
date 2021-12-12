@@ -12,10 +12,14 @@ import _ from 'lodash';
 const RushingRecordsTables = () => {
 	const [playerRushingData, setPlayerRushingData] = useState();
 
-	useEffect(async () => {
+	useEffect(() => {
+		initialLoad()
+	}, []);
+
+	const initialLoad = async () => {
 		const { data } = await fetchData();
 		setPlayerRushingData(data);
-	}, []);
+	}
 
 	const customToolbar = () => {
 		return (
